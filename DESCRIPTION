@@ -1,0 +1,23 @@
+Package: geemisc
+Title: Selection of working correlation structure
+Version: 0.1.0
+Authors@R: 
+    person(given = "Mahbub",
+           family = "Latif",
+           role = c("aut", "cre"),
+           email = "mlatif@isrt.ac.bd")
+    person(given = "Ajmery",
+           family = "Jaman",
+           role = c("aut", "cre"),
+           email = "ajaman@isrt.ac.bd")       
+Description: This package contains functions for selecting the most appropriate 
+    working correlation structure generalized estimating equations.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Suggests: 
+    geepack,
+    stats,
+    testthat
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.1.1
