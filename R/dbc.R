@@ -1,21 +1,35 @@
 #' @title DBC criterion
 #'
-#' @description Deteminant-based criterion (DBC) is used to select the most
-#'    appropriate working correlation struction in a generalized estimation
-#'    equation (gee) setup.
+#' @description Calculates deteminant-based criterion (DBC), which can be 
+#'    used to select the most appropriate working correlation struction 
+#'    in generalized estimation equation (gee). Either the arguments of 
+#'    \code{geeglm} or its output can be used as arguments of \code{dbc}.
 #'
-#' @param object \code{geeglm} object. The current implementation works only for
-#'    "binomial" and "gaussian" families, and for "independence", "exchangeable",
-#'     "ar1", "unstructured", and "toeplitz" correlation structures.
-#'
+#' @param object \code{geeglm} output object and the current implementation 
+#'     works only for "binomial" and "gaussian" families, and for 
+#'     "independence", "exchangeable", "ar1", "unstructured", and 
+#'     "toeplitz" correlation structures.
+#' 
+#' @param formula see corresponding documentation of \code{glm}
+#' 
+#' @param family see corresponding documentation of \code{glm}
+#' 
+#' @param data see corresponding documentation of \code{glm}
+#' 
+#' @param id see corresponding documentation of \code{geeglm}
+#' 
+#' @param corstr see corresponding documentation of \code{geeglm}
+#' 
 #' @param corstr.toeplitz an indicator that takes  \code{TRUE} for
 #'    "toeplitz" correlation structure
 #'
-#' @return It returns \code{dbc} criterion value
+#' @param ... further arguments of \code{geeglm} to be passed 
+#' 
+#' @return rerurns \code{dbc} criterion value and the output of \code{geeglm}
 #'
-#'  @importFrom geepack geeglm
+#' @importFrom geepack geeglm
 #'
-#' @seealso \code{geeglm}
+#' @seealso \code{geeglm}, \code{glm}
 #'
 #' @references Jaman A, Latif AHMM, Bari W, and Wahed A (2016). A determinant‐based
 #'    criterion for working correlation structure selection in generalized
@@ -24,41 +38,31 @@
 #' @export dbc
 #'
 #' @examples
-#'
 #' library(geepack)
 #' data(ohio)
+#' #
 #' fit <- geeglm(resp ~ age + smoke, id=id, data=ohio,
 #'         family=binomial, corstr="exch")
 #' dbc(fit)
+#' #
+#' # geeglm arguments can also be used as arguments 
 #'
-#'
-
-
-#############################################################################
-## DESCRIPTION:
-##
-## One needs to source all the following functions for calculating DBC
-## for a given GEE model. To obtain the value of DBC criterion we need
-## to run DBC.fun function with a geeglm object as argument. The current
-## function only works for "binomial" and "gaussian" families and for
-## "independence", "exchangeable", "ar1", "unstructured", and "toeplitz"
-## correlation structures. If someone wants to obtain DBC for toeplitz
-## correlation structure, then he/she must define corstr.toeplitz = TRUE
-## in DBC.fun and should provide the geeglm object, which has been fitted
-## with toeplitz structure.
-##
-## EXAMPLE:
-##
-## myModelFit <- geeglm(formula = myFormula, data = myData, id = myData$id,
-##                  family = ?binomial?, corstr = ?ar1?))
-## DBC <- DBC.fun(object = myModelFit)
-##
-#############################################################################
-
-dbc <- function(object, corstr.toeplitz = FALSE) {
-  #
+#' fit2 <- dbc(formula = resp ~ age + smoke, id=id, data=ohio,
+#'         family=binomial, corstr="exch")
+#'         
+ dbc <- function(object = NULL, formula, family, data, id, 
+   corstr, corstr.toeplitz = FALSE, ...) {
+   #
+   if (is.null(object)) {
+     #formula <- as.formula(formula)
+     object <- geepack::geeglm(formula = formula, family = family, id = id, 
+       corstr = corstr,
+       data = data, ...)
+   }
    if (summary(object)$error == 1) {
-     message("geeglm fit did not attain convergence (summary.geeglm$error = 1)")
+     message(
+       "geeglm fit did not attain convergence (summary.geeglm$error = 1)"
+       )
      return(NA)
    }
    family <- object$family$family
@@ -76,7 +80,9 @@ dbc <- function(object, corstr.toeplitz = FALSE) {
    phi <- unlist(fit$dispersion[1])
    alpha <- unlist(fit$corr[1])
    if (corstr.toeplitz == TRUE && length(alpha) != max(Ni) - 1) {
-      message("When corstr.toeplitz is TRUE geeglm object must have toeplitz structure")
+      message(
+        "When corstr.toeplitz is TRUE geeglm object must have toeplitz structure"
+        )
      return(NA)
    }
    if (corstr.toeplitz == TRUE) {
@@ -89,6 +95,6 @@ dbc <- function(object, corstr.toeplitz = FALSE) {
    Vs_bc <- Vs.biasC(V.model = Vm, data = data.st, N = N, Ni = Ni, beta = b,
          alpha = alpha, phi = phi, corsr = corsr, family = family)
    dbc <- det(Vm_inv %*% Vs_bc)
-   names(dbc) <- "dbc"
-   return(dbc)
+   #names(dbc) <- "dbc"
+   return(list(fit = object, dbc = dbc))
 }

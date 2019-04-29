@@ -4,35 +4,52 @@
 \alias{dbc}
 \title{DBC criterion}
 \usage{
-dbc(object, corstr.toeplitz = FALSE)
+dbc(object = NULL, formula, family, data, id, corstr,
+  corstr.toeplitz = FALSE, ...)
 }
 \arguments{
-\item{object}{\code{geeglm} object. The current implementation works only for
-"binomial" and "gaussian" families, and for "independence", "exchangeable",
-"ar1", "unstructured", and "toeplitz" correlation structures.}
+\item{object}{\code{geeglm} output object and the current implementation
+works only for "binomial" and "gaussian" families, and for
+"independence", "exchangeable", "ar1", "unstructured", and
+"toeplitz" correlation structures.}
+
+\item{formula}{see corresponding documentation of \code{glm}}
+
+\item{family}{see corresponding documentation of \code{glm}}
+
+\item{data}{see corresponding documentation of \code{glm}}
+
+\item{id}{see corresponding documentation of \code{geeglm}}
+
+\item{corstr}{see corresponding documentation of \code{geeglm}}
 
 \item{corstr.toeplitz}{an indicator that takes  \code{TRUE} for
 "toeplitz" correlation structure}
+
+\item{...}{further arguments of \code{geeglm} to be passed}
 }
 \value{
-It returns \code{dbc} criterion value
-
-@importFrom geepack geeglm
+rerurns \code{dbc} criterion value and the output of \code{geeglm}
 }
 \description{
-Deteminant-based criterion (DBC) is used to select the most
-appropriate working correlation struction in a generalized estimation
-equation (gee) setup.
+Calculates deteminant-based criterion (DBC), which can be
+used to select the most appropriate working correlation struction
+in generalized estimation equation (gee). Either the arguments of
+\code{geeglm} or its output can be used as arguments of \code{dbc}.
 }
 \examples{
-
 library(geepack)
 data(ohio)
+#
 fit <- geeglm(resp ~ age + smoke, id=id, data=ohio,
         family=binomial, corstr="exch")
 dbc(fit)
+#
+# geeglm arguments can also be used as arguments 
 
-
+fit2 <- dbc(formula = resp ~ age + smoke, id=id, data=ohio,
+        family=binomial, corstr="exch")
+        
 }
 \references{
 Jaman A, Latif AHMM, Bari W, and Wahed A (2016). A determinant‐based
@@ -40,5 +57,5 @@ criterion for working correlation structure selection in generalized
 estimating equations. Statistics in Medicine 35(11), 1819-1833.
 }
 \seealso{
-\code{geeglm}
+\code{geeglm}, \code{glm}
 }

@@ -15,8 +15,9 @@ Description: This package contains functions for selecting the most appropriate
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+Depends: 
+    geepack
 Suggests: 
-    geepack,
     stats,
     testthat
 Roxygen: list(markdown = TRUE)
